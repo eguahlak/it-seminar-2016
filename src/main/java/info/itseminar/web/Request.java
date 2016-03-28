@@ -6,15 +6,20 @@ import java.util.Map;
  * 
  */
 public interface Request {
+  /**
+   * Get a map of headers.
+   * @return 
+   */
   Map<String, String> getHeaders();
   Map<String, String> getParameters();
-  byte[] getBody();
+  byte[] getBodyBytes();
+  String getBodyString();
 
   String getParameter(String key);
   String getMethod();
   /**
    * Gets the resource of the request.
-   * The resource is the second value in the first line of the http request
+   * The resource is the second value in the first line of the HTTP request
    * header.
    * @return the resource 
    */

@@ -25,11 +25,15 @@ class HttpRequest implements Request {
       // all characters in the header is ASCII = single byte characters
       char c = (char)in.read();
       if (c == '\r') continue;
-      if (c == '\n' || c == 65535) break;
+      if (c == '\n') break;
+      if (c == 65535) {
+        System.out.println("??????");
+        break;
+        }
       builder.append(c);
       }
     while (true);
-    context.console().writeLine("<< "+builder);
+    context.console().writeLine(">> "+builder);
     return builder.toString();
     }
 
@@ -107,8 +111,13 @@ class HttpRequest implements Request {
     }
 
   @Override
-  public byte[] getBody() {
+  public byte[] getBodyBytes() {
     return body;
+    }
+
+  @Override
+  public String getBodyString() {
+    return new String(body, Charset.forName("UTF-8"));
     }
   
   @Override

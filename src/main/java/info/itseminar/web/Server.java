@@ -96,8 +96,6 @@ public abstract class Server implements Runnable, Context {
       console.writeLine("$$ Root: "+root.getAbsolutePath());
       console.writeLine("$$ Waiting for requests on "+port+"...");
       int i = 0;
-      char[] ws = new char[] { '-', '\\', '|', '/' };
-      console.writeLine("\n$$ .");
       while (running) {
         try {
           Socket socket = server.accept();
@@ -105,8 +103,9 @@ public abstract class Server implements Runnable, Context {
           new Thread(service).start();
           }
         catch (SocketTimeoutException sto) {
-          System.out.print("\b$$ "+ws[i]);
-          i = (i + 1)%4;
+          if (i == 0) console.writeLine("$$ .");
+          else console.write(".");
+          i = (i + 1)%100;
           } 
         }
       }

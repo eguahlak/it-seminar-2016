@@ -25,5 +25,10 @@ public class SystemConsole implements Console {
   public void writeLine(String line) {
     System.out.print("\n"+line);
     }
+
+  @Override
+  public void write(String text) {
+    System.out.print(text);
+    }
   
   }

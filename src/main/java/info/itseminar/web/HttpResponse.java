@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,10 +48,16 @@ class HttpResponse implements Response {
     }
   
   private void writeLine(OutputStreamWriter writer, String line) throws IOException {
-    context.console().writeLine(">> "+line);
+    context.console().writeLine("<< "+line);
     writer.write(line);
     writer.write(CR);
     writer.write(NL);
+    }
+  
+  private void write(OutputStream out, byte[] data) throws IOException {
+    context.console().writeLine("----");
+    context.console().writeLine(new String(data, Charset.forName("UTF-8")));
+    out.write(data);
     }
   
   private void writeHeaders(long contentLenght) throws IOException {
@@ -81,7 +88,8 @@ class HttpResponse implements Response {
     else return;
     try {
       writeHeaders(body.length);
-      out.write(body);
+      write(out, body);
+//      out.write(body);
       }
     finally { out.close(); }
     }
@@ -103,18 +111,29 @@ class HttpResponse implements Response {
   
   @Override
   public void send(File file) throws IOException {
+    Console console = context.console();
     try {
-      if (!file.exists()) send(new NotFoundException());
       if (open) open = false;
       else return;
+      if (!file.exists()) send(new NotFoundException());
       int dotPos = file.getName().lastIndexOf(".");
       type = dotPos < 0 ? "txt" : file.getName().substring(dotPos + 1);
       writeHeaders(file.length());
+      console.writeLine("----");
+      console.writeLine("");
       try (FileInputStream in = new FileInputStream(file)) {
         byte[] buffer = new byte[1024];
         int count;
-        while ((count = in.read(buffer)) > 0) out.write(buffer, 0, count);
+        while ((count = in.read(buffer)) > 0) {
+          out.write(buffer, 0, count);
+          if ("html".equals(type)) {
+            String text = new String(buffer, 0, count, Charset.forName("utf-8"));
+            console.write(text);
+            }
+          else console.writeLine("<< "+count+" bytes of data");
+          }
         }
+      console.writeLine("----");
       }
     catch (FileNotFoundException fne) {
       send (new NotFoundException());

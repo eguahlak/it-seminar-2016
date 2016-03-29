@@ -24,12 +24,17 @@ class HttpService implements Runnable {
       Response response = new HttpResponse(context, out);
       String resource = request.getResource();
       if ("/list".equals(resource)) {
-        String text = "Methods";
-        for (Method method : context.getClass().getMethods()) {
-          text += "\n"+method.getName()+"(...)";
+        String html = "<html><body>";
+        html += "<table><tr><th>Name</th></tr>";
+        for (Method method : context.getClass().getDeclaredMethods()) {
+//          if (method.getDeclaringClass() == Server.class) continue;
+//          if (method.getDeclaringClass() == Object.class) continue;
+          html += "<tr><td>"+method.getName()+"(...)</td></tr>";
           }
-        response.type("txt");
-        response.send(text);
+        html += "</table>";
+        html += "</body></html>";
+        response.type("html");
+        response.send(html);
         }
       else if (resource.startsWith("/service/")) {
         // Do service call here

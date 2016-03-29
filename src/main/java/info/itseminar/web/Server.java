@@ -33,7 +33,7 @@ public abstract class Server implements Runnable, Context {
     }
 
   public Server() {
-    this(4711);
+    this(4712);
     }
     
   protected final Parser parser(String mime) {
@@ -99,7 +99,11 @@ public abstract class Server implements Runnable, Context {
       while (running) {
         try {
           Socket socket = server.accept();
-          HttpService service = new HttpService(this, socket.getInputStream(), socket.getOutputStream());
+          HttpService service = new HttpService(
+              this, 
+              socket.getInputStream(), 
+              socket.getOutputStream()
+              );
           new Thread(service).start();
           }
         catch (SocketTimeoutException sto) {

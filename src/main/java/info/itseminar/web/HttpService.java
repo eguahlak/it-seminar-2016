@@ -47,9 +47,17 @@ class HttpService implements Runnable {
             resource.substring(1, 2).toUpperCase()+
             resource.substring(2, resource.indexOf("."));
         String methodName = request.getMethod()+middle+"Html";
+        boolean hasParameters = request.getParameters().size() > 0;
         try {
-          Method method = context.getClass().getMethod(methodName);
-          String html = (String)method.invoke(context);
+          String html = null;
+          if (hasParameters) {
+            Method method = context.getClass().getMethod(methodName, Request.class);
+            html = (String)method.invoke(context, request);
+            }
+          else {
+            Method method = context.getClass().getMethod(methodName);
+            html = (String)method.invoke(context);
+            }
           response.type("html");
           response.send(html);
           done = true;

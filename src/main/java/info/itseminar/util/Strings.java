@@ -7,7 +7,7 @@ public class Strings {
   public static String pascal(String word) {
     return word.substring(0, 1).toUpperCase()+word.substring(1);
     }
-  
+  // Strings.camel("get", "welcome", "html") -> "getWelcomeHtml"
   public static String camel(String... words) {
     String result = null;
     for (String word : words) {

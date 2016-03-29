@@ -7,6 +7,10 @@ public class SimpleServer extends Server {
     }
   
   public String sayHello() { return "Hello World!"; }
+  
+  public String getWelcomeHtml() {
+    return "<h1>Welcome to Madrid</h1>";
+    }
     
   }
 

@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 class HttpService implements Runnable {
   private final Context context;
@@ -23,6 +26,7 @@ class HttpService implements Runnable {
       Request request = new HttpRequest(context, in);
       Response response = new HttpResponse(context, out);
       String resource = request.getResource();
+      boolean done = false;
       if ("/list".equals(resource)) {
         String html = "<html><body>";
         html += "<table><tr><th>Name</th></tr>";
@@ -35,11 +39,29 @@ class HttpService implements Runnable {
         html += "</body></html>";
         response.type("html");
         response.send(html);
+        done = true;
+        }
+      else if (resource.endsWith(".html")) {
+        // resource: /welcome.html
+        String middle = 
+            resource.substring(1, 2).toUpperCase()+
+            resource.substring(2, resource.indexOf("."));
+        String methodName = request.getMethod()+middle+"Html";
+        try {
+          Method method = context.getClass().getMethod(methodName);
+          String html = (String)method.invoke(context);
+          response.type("html");
+          response.send(html);
+          done = true;
+          }
+        catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+          }
         }
       else if (resource.startsWith("/service/")) {
         // Do service call here
+        done = true;
         }
-      else {
+      if (!done) {
         File file = context.fileFrom(resource);
         response.send(file);
         }

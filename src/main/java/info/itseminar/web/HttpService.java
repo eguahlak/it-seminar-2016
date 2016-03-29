@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 
 class HttpService implements Runnable {
   private final Context context;
@@ -22,8 +23,15 @@ class HttpService implements Runnable {
       Request request = new HttpRequest(context, in);
       Response response = new HttpResponse(context, out);
       String resource = request.getResource();
-      if (resource.startsWith("/service/")) {
-        // Parser parser = server.parser(request.getContentType());
+      if ("/list".equals(resource)) {
+        String text = "Methods";
+        for (Method method : context.getClass().getMethods()) {
+          text += "\n"+method.getName()+"(...)";
+          }
+        response.type("txt");
+        response.send(text);
+        }
+      else if (resource.startsWith("/service/")) {
         // Do service call here
         }
       else {
@@ -33,7 +41,7 @@ class HttpService implements Runnable {
       }
     catch (IOException ex) {
       ex.printStackTrace();
-      context.report(this, ex.getMessage());
+      context.report(ex.getMessage());
       }
     }
   

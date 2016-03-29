@@ -118,7 +118,7 @@ public abstract class Server implements Runnable, Context {
     }
   
   @Override
-  public void report(HttpService service, String message) {
+  public void report(String message) {
     System.err.print("\n$$ REPORTING '"+message+"'");
     }
   

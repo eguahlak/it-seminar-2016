@@ -12,7 +12,7 @@ public class ContextStub implements Context {
     }
 
   @Override
-  public void report(HttpService service, String message) {
+  public void report(String message) {
     console.writeLine("!! "+message);
     }
 
